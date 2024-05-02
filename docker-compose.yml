@@ -1,0 +1,43 @@
+version: '3.8'
+services:
+ postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: your_user
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: your_database
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+ airflow:
+    image: apache/airflow:2.2.3
+    command: webserver
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://your_user:your_password@postgres/your_database
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./dags:/usr/local/airflow/dags
+    depends_on:
+      - postgres
+
+ dbt:
+    image: fishtownanalytics/dbt:0.21.0
+    command: test
+    volumes:
+      - ./dbt:/usr/app/dbt
+    depends_on:
+      - postgres
+
+ redash:
+    image: redash/redash:latest
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+
+volumes:
+ postgres_data:
