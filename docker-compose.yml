@@ -3,9 +3,9 @@ services:
  postgres:
     image: postgres:latest
     environment:
-      POSTGRES_USER: your_user
-      POSTGRES_PASSWORD: your_password
-      POSTGRES_DB: your_database
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345rdx
+      POSTGRES_DB: postgres
     ports:
       - "5432:5432"
     volumes:
@@ -16,17 +16,20 @@ services:
     command: webserver
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://your_user:your_password@postgres/your_database
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://postgres:12345rdx@postgres/postgres
+      - AIRFLOW__WEBSERVER__SECRET_KEY=88ec3975c0e4ee49cc3108c7bdd8cae5760b412c89b743dcda40d77b5bf9
+      
     ports:
-      - "8080:8080"
+      - "8082:8080"
     volumes:
-      - ./dags:/usr/local/airflow/dags
+      - ./dags:/opt/airflow/dags
+      - ./airflow.cfg:/usr/local/airflow/airflow.cfg
     depends_on:
       - postgres
 
  dbt:
     image: fishtownanalytics/dbt:0.21.0
-    command: test
+    command: dbt run
     volumes:
       - ./dbt:/usr/app/dbt
     depends_on:

@@ -17,7 +17,7 @@ default_args = {
 }
 
 dag = DAG(
-    'my_first_dag',
+    'my_second_dag',
     default_args=default_args,
     description='A simple tutorial DAG',
     schedule_interval=timedelta(days=1),
